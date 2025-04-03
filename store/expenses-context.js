@@ -56,7 +56,9 @@ function expensesReducer(state, action) {
   switch (action.type) {
     case "ADD":
       const id = new Date().toString() + Math.random().toString();
-      return [{ ...action.payload, id }, ...state];
+      const newExpense = [{ ...action.payload, id }, ...state];
+
+      return newExpense;
 
     case "UPDATE":
       const updateAbleExpenseIndex = state.findIndex(
