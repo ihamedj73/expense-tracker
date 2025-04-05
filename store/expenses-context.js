@@ -1,53 +1,9 @@
 import { createContext, useReducer } from "react";
 
-const DUMMY_EXAMPLES = [
-  {
-    id: "e1",
-    description: "A pair of shoes",
-    amount: 59.99,
-    date: new Date("2021-12-19"),
-  },
-  {
-    id: "e2",
-    description: "A pair of TROUSERS",
-    amount: 89.99,
-    date: new Date("2022-01-19"),
-  },
-  {
-    id: "e3",
-    description: "some bananas",
-    amount: 5.99,
-    date: new Date("2022-11-19"),
-  },
-  {
-    id: "e4",
-    description: "A book",
-    amount: 15.99,
-    date: new Date("2022-02-12"),
-  },
-  {
-    id: "e5",
-    description: "Another book",
-    amount: 10.99,
-    date: new Date("2022-02-13"),
-  },
-  {
-    id: "e6",
-    description: "A pen",
-    amount: 15.99,
-    date: new Date("2025-04-1"),
-  },
-  {
-    id: "e7",
-    description: "food",
-    amount: 10.99,
-    date: new Date("2025-03-31"),
-  },
-];
-
 export const ExpensesContext = createContext({
   expenses: [],
   addExpense: ({ description, amount, date }) => {},
+  setExpenses: () => {},
   deleteExpense: (id) => {},
   updateExpense: ({ id, description, amount, date }) => {},
 });
@@ -55,10 +11,12 @@ export const ExpensesContext = createContext({
 function expensesReducer(state, action) {
   switch (action.type) {
     case "ADD":
-      const id = new Date().toString() + Math.random().toString();
-      const newExpense = [{ ...action.payload, id }, ...state];
-
+      const newExpense = [action.payload, ...state];
       return newExpense;
+
+    case "SET":
+      const inverted = action.payload.reverse;
+      return inverted;
 
     case "UPDATE":
       const updateAbleExpenseIndex = state.findIndex(
@@ -78,10 +36,14 @@ function expensesReducer(state, action) {
 }
 
 function ExpenseContextProvider({ children }) {
-  const [expensesState, dispatch] = useReducer(expensesReducer, DUMMY_EXAMPLES);
+  const [expensesState, dispatch] = useReducer(expensesReducer, []);
 
   function addExpense(expenseData) {
     dispatch({ type: "ADD", payload: expenseData });
+  }
+
+  function setExpenses(expenses) {
+    dispatch({ type: "SET", payload: expenses });
   }
 
   function deleteExpense(id) {
@@ -100,6 +62,7 @@ function ExpenseContextProvider({ children }) {
 
   const value = {
     expenses: expensesState,
+    setExpenses,
     addExpense,
     deleteExpense,
     updateExpense,
